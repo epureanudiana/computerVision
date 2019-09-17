@@ -1,0 +1,21 @@
+
+clear
+clc
+close all
+% read image and extract dimensions
+I = imread('awb.jpg');
+[rows, columns, ~] = size(I);
+
+r_c = zeros(rows, columns);
+g_c = zeros(rows, columns);
+b_c = zeros(rows, columns);
+%extract color channels
+r = I(:, :, 1);
+g = I(:, :, 2);
+b = I(:, :, 3);
+
+%adjust pixels per channel
+r_c = 128/mean(r)*r;
+r_g = 128/mean(g)*g;
+r_b = 128/mean(b)*b;
+corrected_image = cat(3, r_c, g_c, b_c);
