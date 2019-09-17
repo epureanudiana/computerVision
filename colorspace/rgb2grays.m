@@ -1,7 +1,7 @@
 function [output_image] = rgb2grays(input_image)
 % converts an RGB into grayscale by using 4 different methods
 [r,g,b] = getColorChannels(input_image);
-% ligtness method
+% lightness method
 [rows, columns, ~] = size(input_image);
 outputLightness = zeros(rows, columns);
 for i = 1:rows
