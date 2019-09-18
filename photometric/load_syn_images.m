@@ -47,6 +47,16 @@ min_val = double(min(image_stack(:)));
 max_val = double(max(image_stack(:)));
 image_stack = (double(image_stack) - min_val) / (max_val - min_val);
 
+%{
+% QUESTION 1.4.5 - proposed fix for normalization (line 48): 
+%check if there is a channel with only 0 valued pixels
+if max_val == min_val && min_val == 0
+    image_stack = zeros(h, w, nfiles, 'uint8');
+else
+    image_stack = (double(image_stack) - min_val) / (max_val - min_val);
+end
+%}
+
 normV = sqrt(sum(V.^2, 2));
 scriptV = bsxfun(@rdivide, V, normV);
 

@@ -14,7 +14,7 @@ if nargin == 2
     shadow_trick = true;
 end
 
-% create arrays for 
+% create arrays for
 %   albedo (1 channel)
 %   normal (3 channels)
 albedo = zeros(h, w, 1);
@@ -28,10 +28,27 @@ normal = zeros(h, w, 3);
 %   solve scriptI * scriptV * g = scriptI * i to obtain g for this point
 %   albedo at this point is |g|
 %   normal at this point is g / |g|
+pages = size(image_stack, 3);
 
-
-
+for h1 = 1:h
+    for w1 = 1:w
+        i = zeros(pages, 1);
+        
+        for j = 1:pages
+            i(j) = image_stack(h1, w1, j);
+        end
+        
+        if (shadow_trick)
+            scriptI = diag(i);
+            [g, ~] = linsolve(scriptI * scriptV, scriptI * i);
+        else
+            [g, ~] = linsolve(scriptV, i);
+        end
+        
+        albedo(h1, w1) = norm(g);
+        normal(h1, w1, :) = g / norm(g);
+    end
+end
 % =========================================================================
 
 end
-
