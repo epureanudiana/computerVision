@@ -17,18 +17,14 @@ function visualize(input_image)
         
     end
     
-    figure("Name", "RGB to YCbCr")
+    figure()
     subplot(2,2,1)
     imshow(upperLeft)
-    title("YCbCr")
     subplot(2,2,2)
     imshow(upperRight)
-    title("Y")
     subplot(2,2,3)
     imshow(lowerLeft)
-    title("Cb")
     subplot(2,2,4)
     imshow(lowerRight);
-    title("Cr")
 end
 
