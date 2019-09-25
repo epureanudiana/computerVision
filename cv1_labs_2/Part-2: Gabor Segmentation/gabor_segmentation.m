@@ -133,8 +133,8 @@ fprintf('--------------------------------------\n')
 %            explain what works better and why shortly in the report.
 featureMaps = cell(length(gaborFilterBank),1);
 for jj = 1 : length(gaborFilterBank)
-    real_out =  % \\TODO: filter the grayscale input with real part of the Gabor
-    imag_out =  % \\TODO: filter the grayscale input with imaginary part of the Gabor
+    real_out =  imfilter(img_gray, gaborFilterBank(jj).filterPairs(:,:,1)); % \\TODO: filter the grayscale input with real part of the Gabor
+    imag_out =  imfilter(img_gray, gaborFilterBank(jj).filterPairs(:,:,2));% \\TODO: filter the grayscale input with imaginary part of the Gabor
     featureMaps{jj} = cat(3, real_out, imag_out);
     
     % Visualize the filter responses if you wish.
@@ -158,7 +158,7 @@ featureMags =  cell(length(gaborFilterBank),1);
 for jj = 1:length(featureMaps)
     real_part = featureMaps{jj}(:,:,1);
     imag_part = featureMaps{jj}(:,:,2);
-    featureMags{jj} = % \\TODO: Compute the magnitude here
+    featureMags{jj} = (double(real_part.^2 + imag_part.^2)).^(1/2);% \\TODO: Compute the magnitude here
     
     % Visualize the magnitude response if you wish.
     if visFlag
@@ -188,6 +188,12 @@ if smoothingFlag
         % i)  filter the magnitude response with appropriate Gaussian kernels
         % ii) insert the smoothed image into features(:,:,jj)
     %END_FOR
+    for i = 1:length(featureMags)
+        %h = [size(featureMags, 1) size(featureMags, 2)];
+        %sigma = 1;
+        features(:,:,i) = imgaussfilt(featureMags{i}, 1);
+        %imfilter(featureMags{jj}, fspecial('gaussian',h,sigma));
+    end
 else
     % Don't smooth but just insert magnitude images into the matrix
     % called features.
@@ -201,14 +207,18 @@ end
 % [numRows, numCols, numFilters] into a matrix of size [numRows*numCols, numFilters]
 % This will constitute our data matrix which represents each pixel in the 
 % input image with numFilters features.  
+numRows
+numCols
 features = reshape(features, numRows * numCols, []);
 
-
+dimensions = size(features)
 % Standardize features. 
 % \\ Hint: see http://ufldl.stanford.edu/wiki/index.php/Data_Preprocessing
 %          for more information. \\
 
-features = % \\ TODO: i)  Implement standardization on matrix called features. 
+features = normalization(features);
+           %normalize(features);
+           % \\ TODO: i)  Implement standardization on matrix called features. 
            %          ii) Return the standardized data matrix.
 
 
@@ -216,9 +226,9 @@ features = % \\ TODO: i)  Implement standardization on matrix called features.
 % of the features matrix. It will be useful to diagnose possible problems 
 % with the pipeline and filterbank.  
 coeff = pca(features);
-feature2DImage = reshape(features*coeff(:,1),numRows,numCols);
+%feature2DImage = reshape(features*coeff(:,1),numRows,numCols);
 figure(4)
-imshow(feature2DImage,[]), title('Pixel representation projected onto first PC')
+%imshow(feature2DImage,[]), title('Pixel representation projected onto first PC')
 
 
 % Apply k-means algorithm to cluster pixels using the data matrix,
@@ -227,7 +237,8 @@ imshow(feature2DImage,[]), title('Pixel representation projected onto first PC')
 % \\ Hint-2: use the parameter k defined in the first section when calling
 %            MATLAB's built-in kmeans function.
 tic
-pixLabels = % \\TODO: Return cluster labels per pixel
+pixLabels = kmeans(features, k)
+% \\TODO: Return cluster labels per pixel
 ctime = toc;
 fprintf('Clustering completed in %.3f seconds.\n', ctime);
 
@@ -253,4 +264,17 @@ figure(6)
 imshowpair(Aseg1,Aseg2,'montage')
 
 
+% ----------------------------------------------------------
+function norma = normalization(features)
+% ----------------------------------------------------------
+% Returns the 2D Gaussian Envelope. 
+for jj = 1:size(features, 2)
+                    a = features(:,jj);
+                    m = mean(a);
+                    v = std(a);
+                    for i = 1:size(features, 1)
+                        norma(i:jj) = (features(i:jj) - m)/v;
+                    end     
+end
 
+end
