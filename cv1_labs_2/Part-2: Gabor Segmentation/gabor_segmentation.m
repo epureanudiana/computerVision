@@ -1,7 +1,7 @@
 %% Hyperparameters
 k        = 2;      % number of clusters in k-means algorithm. By default, 
                    % we consider k to be 2 in foreground-background segmentation task.
-image_id = 'Kobi'; % Identifier to switch between input images.
+image_id = 'Robin-1'; % Identifier to switch between input images.
                    % Possible ids: 'Kobi',    'Polar', 'Robin-1'
                    %               'Robin-2', 'Cows', 'SciencePark'
 
@@ -72,7 +72,7 @@ orientations = 0:dTheta:(pi/2);
 
 % Define the set of sigmas for the Gaussian envelope. Sigma here defines 
 % the standard deviation, or the spread of the Gaussian. 
-sigmas = [1,2]; 
+sigmas = [1,1.35]; 
 
 % Now you can create the filterbank. We provide you with a MATLAB struct
 % called gaborFilterBank in which we will hold the filters and their
@@ -159,7 +159,6 @@ for jj = 1:length(featureMaps)
     real_part = featureMaps{jj}(:,:,1);
     imag_part = featureMaps{jj}(:,:,2);
     featureMags{jj} = (double(real_part.^2 + imag_part.^2)).^(1/2);% \\TODO: Compute the magnitude here
-    
     % Visualize the magnitude response if you wish.
     if visFlag
         figure(3), 
@@ -189,10 +188,7 @@ if smoothingFlag
         % ii) insert the smoothed image into features(:,:,jj)
     %END_FOR
     for i = 1:length(featureMags)
-        %h = [size(featureMags, 1) size(featureMags, 2)];
-        %sigma = 1;
-        features(:,:,i) = imgaussfilt(featureMags{i}, 1);
-        %imfilter(featureMags{jj}, fspecial('gaussian',h,sigma));
+        features(:,:,i) = imgaussfilt(featureMags{i}, 15);
     end
 else
     % Don't smooth but just insert magnitude images into the matrix
@@ -207,27 +203,23 @@ end
 % [numRows, numCols, numFilters] into a matrix of size [numRows*numCols, numFilters]
 % This will constitute our data matrix which represents each pixel in the 
 % input image with numFilters features.  
-numRows
-numCols
 features = reshape(features, numRows * numCols, []);
 
-dimensions = size(features)
 % Standardize features. 
 % \\ Hint: see http://ufldl.stanford.edu/wiki/index.php/Data_Preprocessing
 %          for more information. \\
 
-features = normalization(features);
-           %normalize(features);
-           % \\ TODO: i)  Implement standardization on matrix called features. 
-           %          ii) Return the standardized data matrix.
+features = normalize(features, 1);
+% \\ TODO: i)  Implement standardization on matrix called features. 
+%          ii) Return the standardized data matrix.
 
 
 % (Optional) Visualize the saliency map using the first principal component 
 % of the features matrix. It will be useful to diagnose possible problems 
 % with the pipeline and filterbank.  
-coeff = pca(features);
+%coeff = pca(features);
 %feature2DImage = reshape(features*coeff(:,1),numRows,numCols);
-figure(4)
+%figure(4)
 %imshow(feature2DImage,[]), title('Pixel representation projected onto first PC')
 
 
@@ -237,7 +229,7 @@ figure(4)
 % \\ Hint-2: use the parameter k defined in the first section when calling
 %            MATLAB's built-in kmeans function.
 tic
-pixLabels = kmeans(features, k)
+pixLabels = kmeans(features, k);
 % \\TODO: Return cluster labels per pixel
 ctime = toc;
 fprintf('Clustering completed in %.3f seconds.\n', ctime);
@@ -264,17 +256,3 @@ figure(6)
 imshowpair(Aseg1,Aseg2,'montage')
 
 
-% ----------------------------------------------------------
-function norma = normalization(features)
-% ----------------------------------------------------------
-% Returns the 2D Gaussian Envelope. 
-for jj = 1:size(features, 2)
-                    a = features(:,jj);
-                    m = mean(a);
-                    v = std(a);
-                    for i = 1:size(features, 1)
-                        norma(i:jj) = (features(i:jj) - m)/v;
-                    end     
-end
-
-end
