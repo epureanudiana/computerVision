@@ -189,9 +189,10 @@ if smoothingFlag
         % ii) insert the smoothed image into features(:,:,jj)
     %END_FOR
     for i = 1:length(featureMags)
-        h = [size(featureMags, 1) size(featureMags, 2)];
-        sigma = 1;
-        features(:,:,jj) = imfilter(featureMags{jj}, fspecial('gaussian',h,sigma));
+        %h = [size(featureMags, 1) size(featureMags, 2)];
+        %sigma = 1;
+        features(:,:,i) = imgaussfilt(featureMags{i}, 1);
+        %imfilter(featureMags{jj}, fspecial('gaussian',h,sigma));
     end
 else
     % Don't smooth but just insert magnitude images into the matrix
@@ -206,14 +207,17 @@ end
 % [numRows, numCols, numFilters] into a matrix of size [numRows*numCols, numFilters]
 % This will constitute our data matrix which represents each pixel in the 
 % input image with numFilters features.  
+numRows
+numCols
 features = reshape(features, numRows * numCols, []);
 
-
+dimensions = size(features)
 % Standardize features. 
 % \\ Hint: see http://ufldl.stanford.edu/wiki/index.php/Data_Preprocessing
 %          for more information. \\
 
-features = normalize(features);
+features = normalization(features);
+           %normalize(features);
            % \\ TODO: i)  Implement standardization on matrix called features. 
            %          ii) Return the standardized data matrix.
 
@@ -222,9 +226,9 @@ features = normalize(features);
 % of the features matrix. It will be useful to diagnose possible problems 
 % with the pipeline and filterbank.  
 coeff = pca(features);
-feature2DImage = reshape(features*coeff(:,1),numRows,numCols);
+%feature2DImage = reshape(features*coeff(:,1),numRows,numCols);
 figure(4)
-imshow(feature2DImage,[]), title('Pixel representation projected onto first PC')
+%imshow(feature2DImage,[]), title('Pixel representation projected onto first PC')
 
 
 % Apply k-means algorithm to cluster pixels using the data matrix,
@@ -260,4 +264,17 @@ figure(6)
 imshowpair(Aseg1,Aseg2,'montage')
 
 
+% ----------------------------------------------------------
+function norma = normalization(features)
+% ----------------------------------------------------------
+% Returns the 2D Gaussian Envelope. 
+for jj = 1:size(features, 2)
+                    a = features(:,jj);
+                    m = mean(a);
+                    v = std(a);
+                    for i = 1:size(features, 1)
+                        norma(i:jj) = (features(i:jj) - m)/v;
+                    end     
+end
 
+end
