@@ -9,5 +9,5 @@ function G = gauss2D( sigma , kernel_size )
     %denominator = (sigma^2)*2*pi;
     %fraction = -(x.^2 + y.^2)./(2*(sigma^2));
     %G = exp(fraction)/denominator;
-    %G = G./sum(G,'all');
+    G = G./sum(G,'all');
 end
