@@ -1,9 +1,11 @@
 % read image
 %img = imread("person_toy/00000001.jpg");
 img = imread("person_toy/00000001.jpg");
-figure('Name', "Original image");
-imshow(img);
 
-result = harris_corner_detector(img);
+[r, c] = harris_corner_detector(img);
 figure("Name", "Harris corner detection results");
-imshow(result);
+imshow(img);
+axis on
+hold on;
+% Plot cross at row 100, column 50
+plot(r,c, 'r+', 'MarkerSize', 20, 'LineWidth', 2);
