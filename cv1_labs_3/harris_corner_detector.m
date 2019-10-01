@@ -1,4 +1,4 @@
-function [H, r, c, Ix, Iy] = harris_corner_detector(img)
+function [H, r, c, Ix, Iy, x] = harris_corner_detector(img, x)
 % convert to gray scale
 img_black = rgb2gray(img);
 
@@ -52,7 +52,7 @@ c = [];
 Hmax = max(max(H));
 
 % set threshold 
-threshold = Hmax/70;
+threshold = Hmax/x;
 
 %take window of size 3x3
 for i = 2: rows -1
