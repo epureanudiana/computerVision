@@ -1,4 +1,4 @@
-function [r,c] = harris_corner_detector(img)
+function [H, r, c, Ix, Iy] = harris_corner_detector(img)
 % convert to gray scale
 img_black = rgb2gray(img);
 
@@ -43,19 +43,21 @@ H = padarray(H, [1 1]);
 % define result matrix
 rows = size(H, 1);
 columns = size(H, 2);
-%result = zeros(rows, columns);
-Hmax = max(max(H));
 
 r = [];
 c = [];
-% set threshold
-threshold = Hmax;
 
+
+%find the maximum value of H 
+Hmax = max(max(H));
+
+% set threshold 
+threshold = Hmax/70;
+
+%take window of size 3x3
 for i = 2: rows -1
     for j = 2: columns -1
-        %window = H(i-2:i+2, j-2:j+2);
-        %idx =  (H(i,j)> threshold) & (maxW == H(i,j));
-        if H(i,j) > threshold/50 && H(i,j) > H(i-1,j-1) ...
+        if H(i,j) > threshold && H(i,j) > H(i-1,j-1) ...
             && H(i,j) > H(i-1,j) && H(i,j) > H(i-1,j+1)  ...
             && H(i,j) > H(i,j-1) && H(i,j) > H(i,j+1)    ...
             && H(i,j) > H(i+1,j-1) && H(i,j) > H(i+1,j)  ...
@@ -76,7 +78,7 @@ function G_d = gauss1D_d(sigma, kernel_size)
     % normalize kernel
     G_d = G_d./(sum(G_d));
 end
-% create gaussian function and derivative
+% create gaussian function
 function G = gauss1D( sigma , kernel_size )
     %G = zeros(1, kernel_size);
     if mod(kernel_size, 2) == 0
