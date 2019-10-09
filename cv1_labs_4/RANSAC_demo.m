@@ -4,7 +4,7 @@ run('./vlfeat-0.9.21/toolbox/vl_setup')
 
 [fa, fb, matches, scores] = keypoint_matching(Ia, Ib);
 
-[x_best, inliers] = RANSAC(fa, fb, matches, 3, 100);
+[x_best] = RANSAC(fa, fb, matches, 3, 100);
 
 %%%%%%% IMWARP %%%%%%%%%
 imwarp_transf = [x_best(1), x_best(2), 0;
