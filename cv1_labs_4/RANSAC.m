@@ -1,7 +1,7 @@
 function [best_x, inliers] = RANSAC(fa, fb, matches, P)
 
 N = 100;
-P = 10;
+P = 7;
 max_inliers = 0;
 
 for i = 1:N
