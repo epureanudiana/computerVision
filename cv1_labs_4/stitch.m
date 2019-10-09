@@ -3,14 +3,14 @@ function [stitched_image] = stitch(left, right)
 [hr, wr, ~] = size(right);
 
 [fa, fb, matches, ~] = keypoint_matching(rgb2gray(left), rgb2gray(right));
-[x, ~] = RANSAC(fa, fb, matches, 5);
+[x, ~] = RANSAC(fa, fb, matches, 3, 100);
 
 M = [x(1), x(2); x(3), x(4)];
 T = [x(5); x(6)];
 
 % transform the corners of the right image
 corners = [M * [1; 1] + T, M * [wr; 1] + T, M * [1; hr] + T, M * [wr; hr] + T]';
-
+corners
 % get the edges of the stitched image
 top_edge = max(ceil(max(corners(:, 2))), hl);
 bottom_edge = min(floor(min(corners(:, 2))), 1);
