@@ -1,8 +1,8 @@
 function[fa, fb, matches, scores] = keypoint_matching(Ia, Ib)
 
 %single precision
-Ia = single(Ia) ;
-Ib = single(Ib) ;
+Ia = im2single(Ia) ;
+Ib = im2single(Ib) ;
 
 %frames+descriptors
 [fa, da] = vl_sift(Ia);
