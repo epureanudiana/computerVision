@@ -25,38 +25,11 @@ title("Figure boat2 to figure boat1 with imwarp");
 
 %%%%%%% END IMWARP %%%%%%%%%
 
-m = [x_best(1), x_best(2); x_best(3), x_best(4)];
-t = [x_best(5); x_best(6)];
-inverse = inv(m);
+%transform image1 to image2
+ab = affineTransf(Ia, Ib, x_best);
 
-cols = size(Ia, 2);
-rows = size(Ia, 1);
-
-%%%%%% BOAT1 to BOAT2 TRANSFORMATION %%%%%%%
-
-for x = 1:cols
-    for y = 1:rows
-        point = round(m*[x; y] +t);
-        if point(1)>0 && point(2)>0 && point(1) <= size(Ib,2) && point(2)<=size(Ib,1)
-            ab(point(2), point(1)) = Ia(y, x);
-        end
-    end
-end
-%%%%%% END BOAT1 to BOAT2 TRANSFORMATION %%%%%%%
-
-%%%%%% BOAT2 to BOAT1 TRANSFORMATION %%%%%%%
-
-for x = 1:cols
-    for y = 1:rows
-        inverse_point = round(inverse * ([x; y] - t));
-        if inverse_point(2)> 0 && inverse_point(1) > 0 &&  ...
-            inverse_point(1)<=size(Ia,2) && inverse_point(2)<=size(Ia,1)
-            ba(inverse_point(2), inverse_point(1)) = Ib(y, x);
-        end
-    end
-end
-
-%%%%%% END BOAT2 to BOAT1 TRANSFORMATION %%%%%%%
+%transform image2 to image1
+ba = inv_affineTransf(Ia, Ib, x_best);
 
 figure();
 imshow(padarray(ba,0)) ;

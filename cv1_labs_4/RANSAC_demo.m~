@@ -27,36 +27,56 @@ title("Figure boat2 to figure boat1 with imwarp");
 
 m = [x_best(1), x_best(2); x_best(3), x_best(4)];
 t = [x_best(5); x_best(6)];
-m_i = inv(m);
+inverse = inv(m);
 
 cols = size(Ia, 2);
 rows = size(Ia, 1);
 
-%%%%% BOAT1 TO BOAT2 %%%%%%
-AtoB = zeros(size(Ia));
-for x = 1:cols
-    for y = 1:rows
-        point = round(m*[x; y] +t);
-        if point(2)> 0 && point(1) > 0 && point(1) <= size(Ib,2) && point(2)<=size(Ib,1)
-            AtoB(point(2), point(1)) = Ia(y, x);
-        end
-    end
-end
+ab = affineTransf(Ia, Ib, x_best);
+ba = inv_affineTransf(Ia, Ib, x_best);
 
-BtoA = zeros(size(Ib));
 for x = 1:cols
     for y = 1:rows
-        inverse_point = round(m_i * ([x; y] - t));
+        inverse_point = round(inverse * ([x; y] - t));
         if inverse_point(2)> 0 && inverse_point(1) > 0 &&  ...
             inverse_point(1)<=size(Ia,2) && inverse_point(2)<=size(Ia,1)
-            (inverse_point(2), inverse_point(1)) = Ib(y, x);
+            ba(inverse_point(2), inverse_point(1)) = Ib(y, x);
         end
     end
 end
 
+
 figure();
-imshow(padarray(newB,0)) ;
+imshow(padarray(ba,0)) ;
 title("Figure boat2 transformed into figure boat1 with computed coordinates");
 figure();
-imshow(padarray(newA,0)) ;
+imshow(padarray(ab,0)) ;
 title("Figure boat1 transformed into figure boat2 with computed coordinates");
+
+%%%%% PLOT CONNECTING 10 POINTS FROM Ia to TRANSFORMED Ia %%%%%%
+
+[f1, f2, matches, scores] = keypoint_matching(Ia, ab);
+
+figure(20) ; 
+imshow(cat(2, Ia, ab)) ;
+
+matches_perm = randperm(size(matches,2)) ;
+subset_matches = matches(:, matches_perm(1:10)) ;
+
+offset = size(Ia,2);
+
+x1 = f1(1,subset_matches(1,:)) ;
+x2 = f2(1,subset_matches(2,:)) + offset ;
+y1 = f1(2,subset_matches(1,:)) ;
+y2 = f2(2,subset_matches(2,:)) ;
+
+hold on;
+
+h = line([x1 ; x2], [y1 ; y2]) ;
+
+vl_plotframe(f1(:,subset_matches(1,:))) ;
+f2(1,:) = f2(1,:) + size(Ia,2) ;
+vl_plotframe(f2(:,subset_matches(2,:))) ;
+axis image off ;
+
+%%%%% END PLOT CONNECTING 10 POINTS FROM Ia to TRANSFORMED Ia %%%%%%
