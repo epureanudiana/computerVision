@@ -32,7 +32,7 @@ inverse = inv(m);
 cols = size(Ia, 2);
 rows = size(Ia, 1);
 
-%%%%%% BOAT1 to BOAT2 %%%%%%%
+%%%%%% BOAT1 to BOAT2 TRANSFORMATION %%%%%%%
 
 for x = 1:cols
     for y = 1:rows
@@ -42,9 +42,9 @@ for x = 1:cols
         end
     end
 end
-%%%%%% END BOAT1 to BOAT2 %%%%%%%
+%%%%%% END BOAT1 to BOAT2 TRANSFORMATION %%%%%%%
 
-%%%%%% BOAT2 to BOAT1 %%%%%%%
+%%%%%% BOAT2 to BOAT1 TRANSFORMATION %%%%%%%
 
 for x = 1:cols
     for y = 1:rows
@@ -56,7 +56,7 @@ for x = 1:cols
     end
 end
 
-%%%%%% END BOAT2 to BOAT1 %%%%%%%
+%%%%%% END BOAT2 to BOAT1 TRANSFORMATION %%%%%%%
 
 figure();
 imshow(padarray(ba,0)) ;
@@ -64,3 +64,31 @@ title("Figure boat2 transformed into figure boat1 with computed coordinates");
 figure();
 imshow(padarray(ab,0)) ;
 title("Figure boat1 transformed into figure boat2 with computed coordinates");
+
+%%%%% PLOT CONNECTING 10 POINTS FROM Ia to TRANSFORMED Ia %%%%%%
+
+[f1, f2, matches, scores] = keypoint_matching(Ia, ab);
+
+figure(20) ; 
+imshow(cat(2, Ia, ab)) ;
+
+matches_perm = randperm(size(matches,2)) ;
+subset_matches = matches(:, matches_perm(1:10)) ;
+
+offset = size(Ia,2);
+
+x1 = f1(1,subset_matches(1,:)) ;
+x2 = f2(1,subset_matches(2,:)) + offset ;
+y1 = f1(2,subset_matches(1,:)) ;
+y2 = f2(2,subset_matches(2,:)) ;
+
+hold on;
+
+h = line([x1 ; x2], [y1 ; y2]) ;
+
+vl_plotframe(f1(:,subset_matches(1,:))) ;
+f2(1,:) = f2(1,:) + size(Ia,2) ;
+vl_plotframe(f2(:,subset_matches(2,:))) ;
+axis image off ;
+
+%%%%% END PLOT CONNECTING 10 POINTS FROM Ia to TRANSFORMED Ia %%%%%%
