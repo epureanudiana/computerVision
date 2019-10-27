@@ -8,7 +8,7 @@ todo = true;
 %remove unnecessary classes
 if todo
     [train_images, train_labels, test_images, test_labels] = clean_data(train_data, test_data);
-
+end
 %sort according to label
 [sorted_train_images, sorted_train_labels] = sort_data(train_images, train_labels);
 
@@ -18,3 +18,6 @@ if todo
 
 % build vocabulary
 vocabulary = build_vocabulary(build_training_images);
+
+% create histogram
+histogram(vocabulary)
