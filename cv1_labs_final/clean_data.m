@@ -29,4 +29,6 @@ function [X_train, y_train, X_test, y_test] = clean_data(train_data, test_data)
         end    
     end    
     
+    X_train = uint8(X_train);
+    X_test = uint8(X_test);
 end 

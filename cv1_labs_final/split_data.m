@@ -26,5 +26,8 @@ function [build_training_images, build_training_labels, ...
             compute_training_labels(index, 1) = labels(j+i-1, 1);
             index = index + 1;
         end    
-    end    
+    end  
+    
+    build_training_images = uint8(build_training_images);
+    compute_training_images = uint8(compute_training_images);
 end
