@@ -1,0 +1,12 @@
+% compute mean average precision given the number of images(variable n) 
+% class c, and the number of element is the class m
+function [result]  = map(n, c, m, results, classifier)
+    result = 0;
+    if classife[n] == c
+        result = results + ((map(n-1, c, m) + 1)/n)/m; 
+    elseif n == 0
+        result = 0
+    else
+        result = results; 
+    end
+end

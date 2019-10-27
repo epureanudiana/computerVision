@@ -14,17 +14,21 @@ end
 
 % split data for building and computing visual dictionary
 [build_training_images, build_training_labels, ...
-    compute_training_images, compute_training_labels] = split_data(sorted_train_images, sorted_train_labels, 1);
+    compute_training_images, compute_training_labels] = split_data(sorted_train_images, sorted_train_labels, 250);
 
 % build vocabulary
-vocabulary = build_vocabulary(build_training_images);
+[all_descriptors, centers, assignments] = build_vocabulary(build_training_images);
+
+% encode features
+[histogram, ids] = encode_features(centers, compute_training_images, 'keypoints', 'grayscale');
 
 % create histogram
-histogram(vocabulary)
+histogram(histogram)
 
 % do SVM and create histohgrams
-% TODO
-
+svm_classifier = fitcsvm(histogram, build_training_labels,'Standardize',true,'KernelFunction','RBF',...
+    'KernelScale','auto');
+[classifier, scores] = fitPosterior(svm_classifier);predict(svm_classifier,compute_training_images)
 % compute mean average precision for each class
 
 %number of images of a class
@@ -32,9 +36,8 @@ m = 50;
 % number of images
 n = 100;
 
-map(n, 1, m);
-map(n, 2, m);
-map(n, 3, m);
-map(n, 4, m);
-map(n, 5, m);
-
+map(0, n, 1, m, classifier);
+map(0, n, 2, m, classifier);
+map(0, n, 3, m, classifier);
+map(0, n, 4, m, classifier);
+map(0, n, 5, m, classifier);

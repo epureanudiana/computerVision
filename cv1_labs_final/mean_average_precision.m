@@ -1,10 +1,12 @@
 % compute mean average precision given the number of images(variable n) 
 % class c, and the number of element is the class m
-function [index, class, m] = map(n, c, m)
+function [result]  = map(index, n, c, m, results, classifier)
     result = 0;
-    for j = 1 : n
-        result = result + histo(c, i)/j
+    if classifier[n] == c
+        result = results + ((map(index+1, n, c, m, results, classifier) + 1)/index)/m; 
+    elseif index == n
+        result = 0 
+    else
+        result = (map(index+1, n, c, m, results, classifier); 
     end
-    
-    result = result / m
 end
