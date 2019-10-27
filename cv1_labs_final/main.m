@@ -21,3 +21,20 @@ vocabulary = build_vocabulary(build_training_images);
 
 % create histogram
 histogram(vocabulary)
+
+% do SVM and create histohgrams
+% TODO
+
+% compute mean average precision for each class
+
+%number of images of a class
+m = 50;
+% number of images
+n = 100;
+
+map(n, 1, m);
+map(n, 2, m);
+map(n, 3, m);
+map(n, 4, m);
+map(n, 5, m);
+
